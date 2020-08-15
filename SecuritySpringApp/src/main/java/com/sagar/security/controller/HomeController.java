@@ -43,11 +43,33 @@ public class HomeController {
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	 public ModelAndView list() {
 	  ModelAndView model = new ModelAndView("blog_list");
-	  List<Blog> blogList = blogService.getallBlogs();
+	 
+	  //jpa
+	  /*List<Blog> blogList = blogService.getallBlogs();
+	  model.addObject("blogList", blogList);*/
 	  
-	  model.addObject("blogList", blogList);
+	  //using hql
+	  Query q = (Query) em.createQuery("from Blog");
+	  List<Blog> blog = q.getResultList();
+	  model.addObject("blogList", blog);
 	  
+	  //hql practise:
+	  q = (Query) em.createQuery("from Blog where title = :title"); 
+	  //blog = q.getResultList(); 
+	  q.setParameter("title", "blog");
+	  List<Blog> blogs = q.getResultList();
+	  System.out.println(blogs.get(0).getCategory());
+	  
+	  q = (Query) em.createQuery("select id,title,category from Blog where title = :title"); 
+	  q.setParameter("title", "blog");
+	  Object[] data = (Object[]) q.uniqueResult();
+	  System.out.println("select id,title,category from Blog where title = :title:" +data[0]+","+data[1]+","+data[2]);
+		/*
+		  for(Blog b:blog) { System.out.println("HQL:"+b.getTitle()+b.getCategory()); }
+		 */
+		 
 	  return model;
+	 
 	 }
 	 
 	 @RequestMapping(value="/addBlog/", method=RequestMethod.GET)
